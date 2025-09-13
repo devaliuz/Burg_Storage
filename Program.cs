@@ -3,9 +3,11 @@ using Burg_Storage.Components.Account;
 using Burg_Storage.Data;
 using Burg_Storage.Models;
 using Burg_Storage.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
@@ -31,13 +41,12 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(); // // enables [Authorize] attributes
 
-// /// Database: keep your existing provider (SQL Server) and connection string name.
-// /// If you switch to SQLite later, only this registration changes.
+// Database: SQLite provider for user and storage data.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlite(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -52,11 +61,19 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+});
+
 // /// Email sender for Identity (no-op is fine for now)
 builder.Services.AddSingleton<IEmailSender, IdentityNoOpEmailSender>();
 
 // /// File storage service: store uploads under wwwroot/uploads and write metadata to DB.
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+
+// Document management service for versioned files.
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 var app = builder.Build();
 
@@ -81,7 +98,10 @@ app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .RequireAuthorization();
+
+app.MapDefaultControllerRoute();
 
 // /// Identity endpoints (/Account/*)
 app.MapAdditionalIdentityEndpoints();

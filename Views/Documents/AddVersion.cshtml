@@ -1,0 +1,9 @@
+<h2>Add Version for @ViewBag.DocumentName</h2>
+<form action="/Documents/AddVersion/@ViewBag.DocumentId" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div>
+        <label>File</label>
+        <input type="file" name="file" />
+    </div>
+    <button type="submit">Upload</button>
+</form>

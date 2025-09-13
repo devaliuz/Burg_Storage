@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Burg_Storage.Data;
+using Burg_Storage.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;

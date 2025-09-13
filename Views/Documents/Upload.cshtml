@@ -1,0 +1,24 @@
+@using Burg_Storage.Models
+
+<h2>Upload Document</h2>
+<form action="/Documents/Upload" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div>
+        <label>Name</label>
+        <input type="text" name="name" />
+    </div>
+    <div>
+        <label>Access Level</label>
+        <select name="accessLevel">
+@foreach (AccessLevel level in Enum.GetValues(typeof(AccessLevel)))
+{
+            <option value="@level">@level</option>
+}
+        </select>
+    </div>
+    <div>
+        <label>File</label>
+        <input type="file" name="file" />
+    </div>
+    <button type="submit">Upload</button>
+</form>
