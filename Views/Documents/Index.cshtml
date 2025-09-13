@@ -1,0 +1,53 @@
+@model IEnumerable<Burg_Storage.Models.Document>
+
+<link rel="stylesheet" href="/documents.css" />
+
+<div class="top-bar">
+    <span>Angemeldet als: @User.Identity?.Name</span>
+    <a class="logout" href="/Account/Logout">Abmelden</a>
+    <h1>Dokumente</h1>
+</div>
+
+<div class="doc-instructions">
+    <h3>Wie funktioniert die Dokumentenverwaltung?</h3>
+    <ul>
+        <li>Klicke links einen Ordner, um dessen Inhalte anzusehen.</li>
+        <li>Ziehe Dateien in das Feld unten, um sie hochzuladen.</li>
+        <li>Mit "Download" lädst du die aktuelle Version einer Datei herunter.</li>
+    </ul>
+</div>
+
+<form class="upload-form" action="/Documents/Upload" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="text" name="name" placeholder="Dateiname" required />
+    <select name="accessLevel">
+    @foreach (var level in Enum.GetValues(typeof(Burg_Storage.Models.AccessLevel)))
+    {
+        <option value="@level">@level</option>
+    }
+    </select>
+    <input type="file" name="file" required />
+    <button type="submit">Hochladen</button>
+</form>
+
+<table class="doc-table">
+    <thead>
+        <tr><th>Datei</th><th>Größe (KB)</th><th>Hochgeladen</th><th>Aktion</th></tr>
+    </thead>
+    <tbody>
+@foreach (var doc in Model)
+{
+    var latest = doc.Versions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
+    if (latest?.FileRecord != null)
+    {
+        <tr>
+            <td>@latest.FileRecord.FileName</td>
+            <td>@latest.FileRecord.SizeKb</td>
+            <td>@latest.FileRecord.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</td>
+            <td><a href="@Url.Action("Download", new { id = latest.FileRecordId })">Download</a></td>
+        </tr>
+    }
+}
+    </tbody>
+</table>
+

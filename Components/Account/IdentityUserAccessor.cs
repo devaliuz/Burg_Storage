@@ -1,4 +1,5 @@
 using Burg_Storage.Data;
+using Burg_Storage.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Burg_Storage.Components.Account

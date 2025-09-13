@@ -3,6 +3,7 @@ using System.Text.Json;
 using Burg_Storage.Components.Account.Pages;
 using Burg_Storage.Components.Account.Pages.Manage;
 using Burg_Storage.Data;
+using Burg_Storage.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;

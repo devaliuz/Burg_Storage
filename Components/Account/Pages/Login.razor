@@ -1,4 +1,5 @@
-﻿@page "/Account/Login"
+@page "/Account/Login"
+@attribute [AllowAnonymous]
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
@@ -10,57 +11,57 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Log in</PageTitle>
+<HeadContent>
+    <link href="login.css" rel="stylesheet" />
+</HeadContent>
 
-<h1>Log in</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <StatusMessage Message="@errorMessage" />
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                <DataAnnotationsValidator />
-                <h2>Use a local account to log in.</h2>
-                <hr />
-                <ValidationSummary class="text-danger" role="alert" />
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label for="email" class="form-label">Email</label>
-                    <ValidationMessage For="() => Input.Email" class="text-danger" />
-                </div>
-                <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label for="password" class="form-label">Password</label>
-                    <ValidationMessage For="() => Input.Password" class="text-danger" />
-                </div>
-                <div class="checkbox mb-3">
-                    <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                        Remember me
-                    </label>
-                </div>
-                <div>
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div>
-                    <p>
-                        <a href="Account/ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
-            </EditForm>
-        </section>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr />
-            <ExternalLoginPicker />
-        </section>
+<div class="login-background">
+    <div class="login-card">
+        <div class="crest">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#bf8c2f" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M5.072.043A.5.5 0 0 0 4.6.2L3.61 1.391c-.42.56-1.252.92-2.132.92A.5.5 0 0 0 1 2.811V6c0 5.356 3.28 8.61 6.548 9.727a.5.5 0 0 0 .364 0C11.28 14.61 14.56 11.356 14.56 6V2.811a.5.5 0 0 0-.478-.5c-.88 0-1.713-.36-2.132-.92L10.928.2a.5.5 0 0 0-.472-.157 15.55 15.55 0 0 1-5.384 0z" />
+            </svg>
+        </div>
+        <h1 class="title">Burgverein Cloud</h1>
+        <p class="subtitle">Stauferlager Burgverein e.V.</p>
+        <p class="intro">Willkommen im digitalen Burghof – hier verwaltest du deine Dokumente.</p>
+        <StatusMessage Message="@errorMessage" />
+
+        <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+
+            <div class="mb-3 text-start">
+                <label for="email" class="form-label">Benutzername</label>
+                <InputText id="email" @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                <ValidationMessage For="() => Input.Email" class="text-danger" />
+            </div>
+
+            <div class="mb-3 text-start">
+                <label for="password" class="form-label">Passwort</label>
+                <InputText id="password" type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
+                <ValidationMessage For="() => Input.Password" class="text-danger" />
+            </div>
+
+            <div class="form-check mb-3 text-start">
+                <InputCheckbox id="rememberMe" @bind-Value="Input.RememberMe" class="form-check-input" />
+                <label class="form-check-label" for="rememberMe">Angemeldet bleiben</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Anmelden</button>
+
+            <div class="mt-3">
+                <a href="Account/ForgotPassword">Passwort vergessen?</a>
+            </div>
+        </EditForm>
+
+        <div class="tips text-start mt-4">
+            <ul>
+                <li>Geben Sie Ihren Benutzernamen und Ihr Passwort ein.</li>
+                <li>Der Zugangskanal wird verschlüsselt übertragen.</li>
+                <li>Dokumente werden in die Cloud hochgeladen.</li>
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -93,7 +94,8 @@
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo(ReturnUrl);
+            // Redirect to original url or fallback to home when none is provided
+            RedirectManager.RedirectTo(ReturnUrl ?? "/");
         }
         else if (result.RequiresTwoFactor)
         {
