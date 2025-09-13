@@ -1,0 +1,83 @@
+﻿@model Burg_Storage.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Anmelden";
+}
+
+<!-- /// Strongly-typed login view bound to LoginViewModel. -->
+<!-- // Uses Bootstrap classes, server-side validation, anti-forgery token, and posts to Account/Login. -->
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+
+            <div class="text-center mb-4">
+                <!-- // Burg vibe headline from the mockup -->
+                <div style="font-size:2rem; line-height:1;">⚔🏰</div>
+                <h1 class="h3 mt-2 mb-1">Willkommen im digitalen Burghof</h1>
+                <p class="text-muted mb-0">Hier verwalten Sie Ihre Vereinsdokumente sicher und bequem.</p>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+
+                    @* /// Validation summary for model errors *@
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <form asp-controller="Account" asp-action="Login" method="post" novalidate>
+                        @Html.AntiForgeryToken()
+
+                        @* /// ReturnUrl preservation *@
+                        @if (!string.IsNullOrWhiteSpace(Model?.ReturnUrl))
+                        {
+                            <input type="hidden" asp-for="ReturnUrl" />
+                        }
+
+                        <div class="mb-3">
+                            <label asp-for="UserNameOrEmail" class="form-label"></label>
+                            <input asp-for="UserNameOrEmail" class="form-control" autocomplete="username" placeholder="Benutzername oder E-Mail eingeben" />
+                            <span asp-validation-for="UserNameOrEmail" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder="Passwort eingeben" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label"></label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Anmelden</button>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-3">
+                            <a href="#" class="small text-decoration-none">Passwort vergessen?</a>
+                            <!-- // Optional link: registration route can be added later if needed -->
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer bg-white">
+                    <small class="text-muted d-block">
+                        🛡 Ihre Zugangsdaten werden verschlüsselt übertragen und nur über gesicherte Verbindungen gesendet.
+                    </small>
+                    <small class="text-muted d-block">
+                        Bei Fragen hilft unser Web-Admin: <a href="mailto:support@burgverein.de">support@burgverein.de</a>
+                    </small>
+                </div>
+            </div>
+
+            <p class="text-center text-muted mt-3 mb-0">
+                <strong>Stargarder Burgverein e.V.</strong>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- /// Client-side validation hooks (if unobtrusive validation is enabled) -->
+    <partial name="_ValidationScriptsPartial" />
+}
