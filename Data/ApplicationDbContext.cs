@@ -25,6 +25,16 @@ namespace Burg_Storage.Data
         public DbSet<UserFilePath> UserFilePaths => Set<UserFilePath>();
 
         /// <summary>
+        /// Logical documents uploaded by users.
+        /// </summary>
+        public DbSet<Document> Documents => Set<Document>();
+
+        /// <summary>
+        /// Individual versions belonging to documents.
+        /// </summary>
+        public DbSet<DocumentVersion> DocumentVersions => Set<DocumentVersion>();
+
+        /// <summary>
         /// Model configuration for Identity and application entities.
         /// </summary>
         protected override void OnModelCreating(ModelBuilder builder)
@@ -62,6 +72,28 @@ namespace Burg_Storage.Data
                 e.HasOne(x => x.User)
                     .WithMany(u => u.FilePaths)
                     .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Document: basic metadata and access control.
+            builder.Entity<Document>(e =>
+            {
+                e.HasKey(d => d.Id);
+                e.Property(d => d.Name).IsRequired().HasMaxLength(255);
+                e.HasMany(d => d.Versions)
+                    .WithOne(v => v.Document!)
+                    .HasForeignKey(v => v.DocumentId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // DocumentVersion: ensure sequential versions per document.
+            builder.Entity<DocumentVersion>(e =>
+            {
+                e.HasKey(v => v.Id);
+                e.HasIndex(v => new { v.DocumentId, v.VersionNumber }).IsUnique();
+                e.HasOne(v => v.FileRecord)
+                    .WithMany()
+                    .HasForeignKey(v => v.FileRecordId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
