@@ -1,6 +1,7 @@
 using Burg_Storage.Components;
 using Burg_Storage.Components.Account;
 using Burg_Storage.Data;
+using Burg_Storage.Models;
 using Burg_Storage.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
