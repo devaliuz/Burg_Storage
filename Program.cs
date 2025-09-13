@@ -31,13 +31,12 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(); // // enables [Authorize] attributes
 
-// /// Database: keep your existing provider (SQL Server) and connection string name.
-// /// If you switch to SQLite later, only this registration changes.
+// Database: SQLite provider for user and storage data.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlite(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -57,6 +56,9 @@ builder.Services.AddSingleton<IEmailSender, IdentityNoOpEmailSender>();
 
 // /// File storage service: store uploads under wwwroot/uploads and write metadata to DB.
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+
+// Document management service for versioned files.
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 var app = builder.Build();
 
