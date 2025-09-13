@@ -77,6 +77,7 @@ namespace Burg_Storage.Services
         {
             return _db.Documents
                 .Include(d => d.Versions)
+                    .ThenInclude(v => v.FileRecord)
                 .Where(d => d.OwnerId == ownerId)
                 .ToListAsync(ct);
         }

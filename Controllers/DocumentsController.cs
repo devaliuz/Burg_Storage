@@ -17,6 +17,13 @@ namespace Burg_Storage.Controllers
     public class DocumentsController : Controller
     {
         private readonly IDocumentService _documentService;
+        private readonly IFileStorageService _fileStorage;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public DocumentsController(IDocumentService documentService, IFileStorageService fileStorage, UserManager<ApplicationUser> userManager)
+        {
+            _documentService = documentService;
+            _fileStorage = fileStorage;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public DocumentsController(IDocumentService documentService, UserManager<ApplicationUser> userManager)
@@ -74,6 +81,16 @@ namespace Burg_Storage.Controllers
 
             await _documentService.AddVersionAsync(id, file);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Download(int id)
+        {
+            var file = await _fileStorage.GetAsync(id);
+            if (file == null)
+                return NotFound();
+            var (stream, contentType, downloadFileName) = file.Value;
+            return File(stream, contentType, downloadFileName);
         }
     }
 }

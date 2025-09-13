@@ -77,6 +77,15 @@ builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 var app = builder.Build();
 
+// Ensure database is created and seed the default admin user.
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var db = services.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+    SeedData.InitializeAsync(services).GetAwaiter().GetResult();
+}
+
 /// ------------------------------------------------------------
 /// Middleware pipeline
 /// ------------------------------------------------------------
