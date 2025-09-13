@@ -24,6 +24,12 @@ namespace Burg_Storage.Controllers
         {
             _documentService = documentService;
             _fileStorage = fileStorage;
+
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public DocumentsController(IDocumentService documentService, UserManager<ApplicationUser> userManager)
+        {
+            _documentService = documentService;
             _userManager = userManager;
         }
 

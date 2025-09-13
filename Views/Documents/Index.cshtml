@@ -33,6 +33,11 @@
 <table class="doc-table">
     <thead>
         <tr><th>Datei</th><th>Größe (KB)</th><th>Hochgeladen</th><th>Aktion</th></tr>
+
+<h2>Your Documents</h2>
+<table>
+    <thead>
+        <tr><th>Name</th><th>Access</th><th>Versions</th><th></th></tr>
     </thead>
     <tbody>
 @foreach (var doc in Model)
@@ -51,3 +56,14 @@
     </tbody>
 </table>
 
+
+    <tr>
+        <td>@doc.Name</td>
+        <td>@doc.AccessLevel</td>
+        <td>@doc.Versions.Count</td>
+        <td><a href="/Documents/AddVersion/@doc.Id">Add Version</a></td>
+    </tr>
+}
+    </tbody>
+</table>
+<p><a href="/Documents/Upload">Upload new document</a></p>
